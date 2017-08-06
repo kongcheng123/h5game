@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>game_1 打方块</title>
+    <style>
+        #id_canvas{
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+  <canvas id="id_canvas" height="300" width="400"></canvas>
+    
+    <script>
+        var log = console.log.bind(console)
+        
+        var imgFromPath = function(path) {
+            var img = new Image()
+            img.src = path
+            return img
+        }
+        var Paddle = function() {
+            var img = imgFromPath('paddle.png')
+            var o = {
+                image : img,
+                x : 100,
+                y : 200,
+                speed : 5,
+            }
+            o.moveLeft = function(){
+                this.x -= this.speed
+            }
+            o.moveRight = function(){
+                this.x += this.speed                
+            }
+            return o
+        }
+        var Game = function() {
+            var g = {}
+            var canvas = document.querySelector('#id_canvas')
+            var context = canvas.getContext('2d')
+            g.canvas = canvas
+            g.context = context
+
+            setInterval(function(){
+                g.update()
+                context.clearRect(0, 0, canvas.width, canvas.height)                
+                g.draw()
+            }, 1000/30)
+            return g
+        }
+        var __main = function(){
+            var paddle = Paddle()
+
+            var game = Game()
+            
+            
+            var leftdown = false
+            var rightdown = false
+            window.addEventListener('keydown',function(event){
+                log('keydown')
+                var k = event.key
+                if(k == 'a'){
+                    leftdown = true
+                }else if(k == 'd'){
+                    rightdown = true
+                }
+            })
+            window.addEventListener('keyup',function(event){
+                log('keyup')
+                var k = event.key
+                if(k == 'a'){
+                    leftdown = false
+                }else if(k == 'd'){
+                    rightdown = false
+                }
+            })
+            game.update = function(){
+                if(leftdown){
+                    paddle.moveLeft()
+                }else if(rightdown){
+                    paddle.moveRight()
+                }
+            }
+            game.draw = function(){
+                game.context.drawImage(paddle.image, paddle.x, paddle.y)
+            }
+        
+        }
+
+        __main()
+    </script>
+</body>
+</html>
