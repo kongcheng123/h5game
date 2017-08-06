@@ -39,13 +39,36 @@
             return o
         }
         var Game = function() {
-            var g = {}
+            var g = {
+                actions : {},
+                keydowns : {},
+            }
             var canvas = document.querySelector('#id_canvas')
             var context = canvas.getContext('2d')
             g.canvas = canvas
             g.context = context
 
+            window.addEventListener('keydown', function(event){
+                g.keydowns[event.key] = true
+            })
+            window.addEventListener('keyup', function(event){
+                g.keydowns[event.key] = false
+            })
+
+            g.registerAction = function(key,callback){
+                g.actions[key] = callback
+            }
+
             setInterval(function(){
+                var actions = Object.keys(g.actions)
+                for (var index = 0; index < actions.length; index++) {
+                    var key = actions[index]
+                    if(g.keydowns[key]){
+                        g.actions[key]()
+                    }
+                    
+                }
+
                 g.update()
                 context.clearRect(0, 0, canvas.width, canvas.height)                
                 g.draw()
@@ -58,32 +81,15 @@
             var game = Game()
             
             
-            var leftdown = false
-            var rightdown = false
-            window.addEventListener('keydown',function(event){
-                log('keydown')
-                var k = event.key
-                if(k == 'a'){
-                    leftdown = true
-                }else if(k == 'd'){
-                    rightdown = true
-                }
+            game.registerAction('a',function(){
+                paddle.moveLeft()
             })
-            window.addEventListener('keyup',function(event){
-                log('keyup')
-                var k = event.key
-                if(k == 'a'){
-                    leftdown = false
-                }else if(k == 'd'){
-                    rightdown = false
-                }
+            game.registerAction('d',function(){
+                paddle.moveRight()
             })
+            
             game.update = function(){
-                if(leftdown){
-                    paddle.moveLeft()
-                }else if(rightdown){
-                    paddle.moveRight()
-                }
+                
             }
             game.draw = function(){
                 game.context.drawImage(paddle.image, paddle.x, paddle.y)
