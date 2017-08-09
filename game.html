@@ -33,9 +33,15 @@
             }
             o.moveLeft = function(){
                 this.x -= this.speed
+                if( this.x < 0){
+                    this.x = 0
+                }
             }
             o.moveRight = function(){
-                this.x += this.speed                
+                this.x += this.speed    
+                if( this.x > 400 - this.image.width){
+                    this.x = 400 - this.image.width
+                }            
             }
             o.collide = function(ball) {
                 return xiangzhuang(o,ball) || xiangzhuang(ball, o)
@@ -143,8 +149,12 @@
 
             var game = Game()
             var ball = Ball()
-            var block = Block()
-
+            var blocks =[]
+            for(var i = 0;i < 3;i++){
+                var b = Block()
+                b.x = i*120
+                blocks.push(b)
+            }
             game.registerAction('a',function(){
                 paddle.moveLeft()
             })
@@ -162,19 +172,24 @@
                 if(paddle.collide(ball)){
                     ball.speedY *= -1
                 }
-
-                if(block.collide(ball) && block.alive){
-                    block.killed()
-                    ball.speedY *= -1
+                for(var i = 0;i < blocks.length;i++){
+                    if(blocks[i].collide(ball) && blocks[i].alive){
+                        blocks[i].killed()
+                        ball.speedY *= -1
+                    }
                 }
+                
             }
             game.draw = function(){
                 //game.context.drawImage(paddle.image, paddle.x, paddle.y)
                 game.drawImage(paddle)
                 game.drawImage(ball)
-                if(block.alive){
-                    game.drawImage(block)
+                for(var i = 0;i < blocks.length;i++){
+                    if(blocks[i].alive){
+                    game.drawImage(blocks[i])
                 }
+                }
+                
             }
         
         }
